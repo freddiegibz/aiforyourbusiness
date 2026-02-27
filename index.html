@@ -1183,20 +1183,25 @@
         btn.addEventListener('click', trackInitiateCheckout);
       });
 
-      // Sticky bar: show after scrolling past the hero (or 300px on small screens)
+      // Sticky bar: always visible on mobile; scroll-triggered on desktop
       var stickyBar = document.getElementById('stickyBar');
       var hero = document.querySelector('.hero');
       if (stickyBar) {
-        function onScroll() {
-          var threshold = hero ? hero.offsetHeight * 0.6 : 300;
-          if (window.scrollY > threshold) {
+        function updateStickyBar() {
+          if (window.innerWidth <= 768) {
             stickyBar.classList.add('is-visible');
           } else {
-            stickyBar.classList.remove('is-visible');
+            var threshold = hero ? hero.offsetHeight * 0.6 : 400;
+            if (window.scrollY > threshold) {
+              stickyBar.classList.add('is-visible');
+            } else {
+              stickyBar.classList.remove('is-visible');
+            }
           }
         }
-        window.addEventListener('scroll', onScroll, { passive: true });
-        onScroll();
+        window.addEventListener('scroll', updateStickyBar, { passive: true });
+        window.addEventListener('resize', updateStickyBar, { passive: true });
+        updateStickyBar();
       }
     })();
   </script>
