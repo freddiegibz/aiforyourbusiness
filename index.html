@@ -603,7 +603,7 @@
     .final-cta {
       width: 100%;
       padding: 100px 48px;
-      background-color: #F1F5F9;
+      background: linear-gradient(180deg, #F8FBFD 0%, #FFFFFF 100%);
       border-top: 1px solid #E2E8F0;
     }
 
@@ -766,6 +766,12 @@
 </head>
 <body>
 
+  <nav class="nav">
+    <div class="nav__container">
+      <a href="mailto:alfiebailey2265@gmail.com" class="nav__contact">Contact</a>
+    </div>
+  </nav>
+
   <section class="hero">
     <div class="hero__container">
 
@@ -798,7 +804,7 @@
     </div>
   </section>
 
-  <section class="content-section">
+  <section class="content-section content-section--white">
     <div class="content-section__container">
       <h2 class="content-section__headline">Where Time Is Quietly Leaking Inside Local Businesses</h2>
       
@@ -822,7 +828,7 @@
     </div>
   </section>
 
-  <section class="content-section content-section--alt">
+  <section class="content-section content-section--white">
     <div class="content-section__container">
       <h2 class="content-section__headline">Why Most Businesses Get AI Wrong</h2>
       
@@ -1044,6 +1050,9 @@
   <section class="content-section">
     <div class="content-section__container">
       <h2 class="content-section__headline">Who This Is For, and Who It's Not</h2>
+      
+      <p class="content-section__text">This makes your offer feel stronger, not smaller.</p>
+
       <h3 class="content-section__step-title">This Is For You If:</h3>
       <ul class="content-section__list">
         <li>You run a local business and handle admin personally</li>
@@ -1067,7 +1076,7 @@
     </div>
   </section>
 
-  <section class="content-section content-section--alt">
+  <section class="content-section">
     <div class="content-section__container">
       <h2 class="content-section__headline">What Happens When You Implement This Properly</h2>
       
@@ -1117,7 +1126,7 @@
       </p>
 
       <div class="final-cta__price-box">
-        <div class="final-cta__price">£23</div>
+        <div class="final-cta__price">$23</div>
         <p class="final-cta__price-description">One-time payment. Instant download.</p>
         <a href="https://buy.stripe.com/28EdR82MzfEU8mA8lYbZe0g" class="final-cta__button">Get the Implementation Plan</a>
       </div>
@@ -1140,7 +1149,7 @@
     (function() {
       function trackInitiateCheckout() {
         if (typeof fbq === 'function') {
-          fbq('track', 'InitiateCheckout', { value: 23.00, currency: 'GBP' });
+          fbq('track', 'InitiateCheckout', { value: 23.00, currency: 'USD' });
         }
       }
       var buyButtons = document.querySelectorAll('.hero__button, .final-cta__button');

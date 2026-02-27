@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You're In — AI Implementation Plan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      -webkit-font-smoothing: antialiased;
+      scroll-behavior: smooth;
+    }
+
+    /* ── Tokens ── */
+    :root {
+      --bg:        #F5F6F7;
+      --bg-card:   #FFFFFF;
+      --text:      #1C1C1C;
+      --muted:     #5A5A5A;
+      --border:    #E0E0E0;
+      --accent:    #F2B705;
+      --accent-dk: #D9A304;
+      --green:     #1A7A4A;
+      --radius:    10px;
+      --max-w:     680px;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-size: 17px;
+      line-height: 1.65;
+    }
+
+    /* ── Layout ── */
+    .page {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      width: 100%;
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── Sections ── */
+    section {
+      padding: 56px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    section:last-of-type {
+      border-bottom: none;
+    }
+
+    /* ── Confirmation Block ── */
+    .confirm {
+      background-color: var(--bg-card);
+      padding: 56px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .confirm__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background-color: #ECFDF5;
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+    }
+
+    .confirm__badge::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background-color: var(--green);
+      border-radius: 50%;
+    }
+
+    .confirm__headline {
+      font-size: clamp(40px, 8vw, 58px);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .confirm__subtext {
+      font-size: clamp(16px, 2.5vw, 18px);
+      color: var(--muted);
+      max-width: 480px;
+      margin-bottom: 36px;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      background-color: var(--accent);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      padding: 16px 36px;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.2s ease, transform 0.15s ease;
+      letter-spacing: -0.01em;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--accent-dk);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      display: inline-block;
+      background-color: transparent;
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 14px 28px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      text-decoration: none;
+      transition: border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      border-color: #9CA3AF;
+      color: var(--text);
+    }
+
+    /* ── Divider ── */
+    .divider {
+      width: 40px;
+      height: 3px;
+      background-color: var(--accent);
+      border-radius: 2px;
+      margin-bottom: 28px;
+    }
+
+    /* ── Upsell Block ── */
+    .upsell {
+      background-color: var(--bg);
+    }
+
+    .upsell__label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .upsell__headline {
+      font-size: clamp(26px, 5vw, 36px);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+
+    .upsell__body {
+      font-size: clamp(15px, 2vw, 17px);
+      color: var(--muted);
+      max-width: 580px;
+      margin-bottom: 32px;
+    }
+
+    .upsell__deliverables {
+      list-style: none;
+      margin: 0 0 36px;
+      padding: 0;
+    }
+
+    .upsell__deliverables li {
+      font-size: 16px;
+      color: var(--text);
+      padding: 12px 0;
+      padding-left: 30px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+
+    .upsell__deliverables li:first-child {
+      border-top: 1px solid var(--border);
+    }
+
+    .upsell__deliverables li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      font-weight: 700;
+      color: var(--green);
+      font-size: 15px;
+    }
+
+    .upsell__price-block {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .upsell__price {
+      font-size: 38px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+
+    .upsell__price-label {
+      font-size: 16px;
+      color: var(--muted);
+    }
+
+    .upsell__slots {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+
+    /* ── Choice Block ── */
+    .choice {
+      background-color: var(--bg-card);
+    }
+
+    .choice__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .choice__card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .choice__card--primary {
+      border-color: var(--accent);
+      background-color: #FFFBEB;
+    }
+
+    .choice__card-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--muted);
+    }
+
+    .choice__card--primary .choice__card-label {
+      color: var(--accent-dk);
+    }
+
+    .choice__card-title {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.3;
+      color: var(--text);
+    }
+
+    .choice__card-desc {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .choice__card .btn-primary,
+    .choice__card .btn-secondary {
+      width: 100%;
+      text-align: center;
+      margin-top: auto;
+    }
+
+    /* ── FAQ ── */
+    .faq {
+      background-color: var(--bg);
+    }
+
+    .faq__headline {
+      font-size: clamp(22px, 4vw, 28px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 28px;
+    }
+
+    .faq__item {
+      border-top: 1px solid var(--border);
+    }
+
+    .faq__item:last-child {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .faq__question {
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: none;
+      padding: 20px 0;
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .faq__question:hover {
+      color: #000;
+    }
+
+    .faq__icon {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--muted);
+      transition: transform 0.2s ease;
+    }
+
+    .faq__item.open .faq__icon {
+      transform: rotate(45deg);
+    }
+
+    .faq__answer {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.7;
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+
+    .faq__item.open .faq__answer {
+      max-height: 400px;
+      padding-bottom: 20px;
+    }
+
+    /* Credit toggle */
+    .credit-toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background-color: var(--border);
+      border-radius: 100px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .toggle-track::before {
+      content: '';
+      position: absolute;
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      top: 3px;
+      background-color: white;
+      border-radius: 50%;
+      transition: transform 0.2s ease;
+    }
+
+    .toggle-switch input:checked + .toggle-track {
+      background-color: var(--accent);
+    }
+
+    .toggle-switch input:checked + .toggle-track::before {
+      transform: translateX(18px);
+    }
+
+    .credit-note {
+      display: none;
+      font-size: 14px;
+      color: var(--green);
+      font-weight: 500;
+      margin-top: 6px;
+    }
+
+    .credit-note.visible {
+      display: block;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      background-color: var(--bg-card);
+      padding: 40px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer__inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      text-align: center;
+    }
+
+    .footer__support {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .footer__support a {
+      color: var(--text);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .footer__support a:hover {
+      text-decoration: underline;
+    }
+
+    .footer__trust {
+      font-size: 13px;
+      color: #9CA3AF;
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 600px) {
+      section {
+        padding: 44px 0;
+      }
+
+      .confirm,
+      .choice,
+      .footer {
+        padding: 44px 0;
+      }
+
+      .choice__grid {
+        grid-template-columns: 1fr;
+      }
+
+      .choice__card--primary {
+        order: -1;
+      }
+
+      .upsell__price {
+        font-size: 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page">
+
+    <!-- ── 1. Confirmation Block ── -->
+    <section class="confirm">
+      <div class="container">
+        <div class="confirm__badge">Purchase confirmed</div>
+        <h1 class="confirm__headline">You're In.</h1>
+        <p class="confirm__subtext">Your guide is on the way to your inbox. Check spam or promotions if you don't see it within a few minutes.</p>
+        <a href="{{GUIDE_LINK}}" class="btn-primary" data-cta="access_guide">Access Your Guide &rarr;</a>
+      </div>
+    </section>
+
+    <!-- ── 2. Upsell Block ── -->
+    <section class="upsell">
+      <div class="container">
+        <div class="divider"></div>
+        <p class="upsell__label">Optional next step</p>
+        <h2 class="upsell__headline">Want This Mapped to Your Business Personally?</h2>
+        <p class="upsell__body">The guide gives you the full system. The audit takes it further — it identifies exactly where your time is leaking, what to automate first, and hands you a clear, prioritised implementation roadmap built around how you actually operate.</p>
+
+        <ul class="upsell__deliverables">
+          <li>Identify your highest-friction tasks</li>
+          <li>Map where AI can remove effort in your workflow</li>
+          <li>Prioritise what to implement first</li>
+          <li>Estimate realistic time savings for your business</li>
+          <li>Receive a clear, step-by-step implementation roadmap</li>
+        </ul>
+
+        <div class="upsell__price-block">
+          <span class="upsell__price">$67</span>
+          <span class="upsell__price-label">AI Efficiency Audit &mdash; one-time</span>
+        </div>
+        <p class="upsell__slots">Limited weekly slots to maintain quality.</p>
+
+        <a href="{{AUDIT_CHECKOUT_LINK}}" class="btn-primary" data-cta="book_audit">Book My Audit &rarr;</a>
+      </div>
+    </section>
+
+    <!-- ── 3. Choice Block ── -->
+    <section class="choice">
+      <div class="container">
+        <div class="choice__grid">
+
+          <div class="choice__card choice__card--primary">
+            <p class="choice__card-label">Recommended</p>
+            <h3 class="choice__card-title">Get it done faster with a personal audit</h3>
+            <p class="choice__card-desc">Walk away with a roadmap built specifically for your business — no guesswork.</p>
+            <a href="{{AUDIT_CHECKOUT_LINK}}" class="btn-primary" data-cta="book_audit">Book My Audit</a>
+          </div>
+
+          <div class="choice__card">
+            <p class="choice__card-label">DIY</p>
+            <h3 class="choice__card-title">I'll implement this myself</h3>
+            <p class="choice__card-desc">The guide has everything you need to get started on your own timeline.</p>
+            <a href="{{GUIDE_LINK}}" class="btn-secondary" data-cta="continue_diy">Continue</a>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 4. FAQ Accordion ── -->
+    <section class="faq">
+      <div class="container">
+        <h2 class="faq__headline">A few common questions</h2>
+
+        <div class="faq__item">
+          <button class="faq__question" aria-expanded="false">
+            Do I need to be technical?
+            <span class="faq__icon">+</span>
+          </button>
+          <div class="faq__answer">
+            Not at all. Both the guide and the audit are built specifically for non-technical business owners. No software background, no jargon, no complicated setup required.
+          </div>
+        </div>
+
+        <div class="faq__item">
+          <button class="faq__question" aria-expanded="false">
+            What happens after I book the audit?
+            <span class="faq__icon">+</span>
+          </button>
+          <div class="faq__answer">
+            After payment you'll receive a short intake form to describe how your business currently operates. Once that's submitted, you'll be able to schedule a brief call or receive your roadmap directly — whichever fits your preference.
+          </div>
+        </div>
+
+        <div class="faq__item">
+          <button class="faq__question" aria-expanded="false">
+            Is the audit fee credited toward done-for-you implementation?
+            <span class="faq__icon">+</span>
+          </button>
+          <div class="faq__answer">
+            <div class="credit-toggle">
+              <label class="toggle-switch">
+                <input type="checkbox" id="creditToggle">
+                <span class="toggle-track"></span>
+              </label>
+              <span>Apply $67 credit toward implementation</span>
+            </div>
+            <p class="credit-note" id="creditNote">Yes — your $67 audit fee is credited in full toward any done-for-you implementation package.</p>
+            <p id="creditOff" style="margin-top:10px;font-size:14px;color:#9CA3AF;">Toggle above to see credit terms.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── 5. Footer ── -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer__inner">
+          <p class="footer__support">Need help? Email us at <a href="mailto:{{SUPPORT_EMAIL}}">{{SUPPORT_EMAIL}}</a></p>
+          <p class="footer__trust">No hype. Just practical implementation.</p>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    // ── FAQ accordion ──
+    document.querySelectorAll('.faq__question').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var item = this.closest('.faq__item');
+        var isOpen = item.classList.contains('open');
+
+        // Close all
+        document.querySelectorAll('.faq__item').forEach(function(el) {
+          el.classList.remove('open');
+          el.querySelector('.faq__question').setAttribute('aria-expanded', 'false');
+        });
+
+        // Open clicked if it was closed
+        if (!isOpen) {
+          item.classList.add('open');
+          this.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+
+    // ── Credit toggle ──
+    var toggle = document.getElementById('creditToggle');
+    var note   = document.getElementById('creditNote');
+    var off    = document.getElementById('creditOff');
+
+    toggle.addEventListener('change', function() {
+      if (this.checked) {
+        note.classList.add('visible');
+        off.style.display = 'none';
+      } else {
+        note.classList.remove('visible');
+        off.style.display = 'block';
+      }
+    });
+  </script>
+
+</body>
+</html>
