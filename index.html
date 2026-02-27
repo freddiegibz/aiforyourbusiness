@@ -649,6 +649,93 @@
       .final-cta__button { width: 100%; padding: 18px 24px; }
       .final-cta__guarantees { gap: 16px; flex-direction: column; align-items: center; }
     }
+
+    /* ── Risk Reversal ── */
+    .risk-reversal {
+      margin-top: 12px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--subtle);
+      line-height: 1.5;
+    }
+
+    .risk-reversal strong {
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    /* ── Sticky CTA Bar ── */
+    .sticky-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      background-color: var(--text);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.18);
+    }
+
+    .sticky-bar.is-visible {
+      transform: translateY(0);
+    }
+
+    .sticky-bar__copy {
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.75);
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    .sticky-bar__copy strong {
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .sticky-bar__button {
+      display: inline-block;
+      background-color: var(--accent);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+      padding: 11px 26px;
+      border-radius: var(--radius);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      transition: background-color 0.2s ease, transform 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .sticky-bar__button:hover {
+      background-color: var(--accent-dk);
+      transform: translateY(-1px);
+    }
+
+    .sticky-bar__guarantee {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      white-space: nowrap;
+    }
+
+    @media (max-width: 768px) {
+      .sticky-bar {
+        flex-direction: column;
+        gap: 10px;
+        padding: 16px 20px;
+      }
+      .sticky-bar__copy { font-size: 13px; text-align: center; white-space: normal; }
+      .sticky-bar__button { width: 100%; text-align: center; padding: 14px 20px; }
+      .sticky-bar__guarantee { text-align: center; }
+    }
   </style>
 
   <!-- Meta Pixel Code -->
@@ -670,6 +757,13 @@
   <!-- End Meta Pixel Code -->
 </head>
 <body>
+
+  <!-- Sticky CTA Bar -->
+  <div class="sticky-bar" id="stickyBar" role="complementary" aria-label="Purchase prompt">
+    <p class="sticky-bar__copy"><strong>The AI Implementation Plan</strong> &mdash; $23, instant access</p>
+    <a href="https://buy.stripe.com/cNifZg1IvcsIdGUeKmbZe0n" class="sticky-bar__button" data-cta="sticky_bar">Get the Implementation Plan</a>
+    <span class="sticky-bar__guarantee">30-day guarantee &mdash; if you don't find it useful, don't pay</span>
+  </div>
 
   <nav class="nav">
     <div class="nav__container">
@@ -699,6 +793,7 @@
 
         <div class="hero__cta">
           <a href="https://buy.stripe.com/cNifZg1IvcsIdGUeKmbZe0n" class="hero__button">Get the Implementation Plan</a>
+          <p class="risk-reversal">30-day guarantee &mdash; <strong>if you don't find it useful, don't pay.</strong></p>
           <a href="#whats-inside" class="hero__secondary-cta">See What's Inside</a>
         </div>
       </div>
@@ -1037,6 +1132,7 @@
         <div class="final-cta__price">$23</div>
         <p class="final-cta__price-description">One-time payment. Instant download.</p>
         <a href="https://buy.stripe.com/cNifZg1IvcsIdGUeKmbZe0n" class="final-cta__button">Get the Implementation Plan</a>
+        <p class="risk-reversal" style="text-align:center; margin-top:14px;">30-day guarantee &mdash; <strong>if you don't find it useful, don't pay.</strong></p>
       </div>
 
       <div class="final-cta__guarantees">
@@ -1055,15 +1151,31 @@
 
   <script>
     (function() {
+      // Pixel tracking
       function trackInitiateCheckout() {
         if (typeof fbq === 'function') {
           fbq('track', 'InitiateCheckout', { value: 23.00, currency: 'USD' });
         }
       }
-      var buyButtons = document.querySelectorAll('.hero__button, .final-cta__button');
+      var buyButtons = document.querySelectorAll('.hero__button, .final-cta__button, .sticky-bar__button');
       buyButtons.forEach(function(btn) {
         btn.addEventListener('click', trackInitiateCheckout);
       });
+
+      // Sticky bar: show after scrolling past the hero
+      var stickyBar = document.getElementById('stickyBar');
+      var hero = document.querySelector('.hero');
+      if (stickyBar && hero) {
+        function onScroll() {
+          var heroBottom = hero.getBoundingClientRect().bottom;
+          if (heroBottom < 0) {
+            stickyBar.classList.add('is-visible');
+          } else {
+            stickyBar.classList.remove('is-visible');
+          }
+        }
+        window.addEventListener('scroll', onScroll, { passive: true });
+      }
     })();
   </script>
 </body>
