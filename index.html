@@ -741,13 +741,20 @@
 
     @media (max-width: 768px) {
       .sticky-bar {
-        flex-direction: column;
-        gap: 10px;
-        padding: 16px 20px;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
       }
-      .sticky-bar__copy { font-size: 13px; text-align: center; white-space: normal; }
-      .sticky-bar__button { width: 100%; text-align: center; padding: 14px 20px; }
-      .sticky-bar__guarantee { text-align: center; }
+      .sticky-bar__copy { display: none; }
+      .sticky-bar__guarantee { display: none; }
+      .sticky-bar__button {
+        flex: 1;
+        text-align: center;
+        padding: 14px 16px;
+        font-size: 15px;
+      }
     }
   </style>
 
@@ -1176,19 +1183,20 @@
         btn.addEventListener('click', trackInitiateCheckout);
       });
 
-      // Sticky bar: show after scrolling past the hero
+      // Sticky bar: show after scrolling past the hero (or 300px on small screens)
       var stickyBar = document.getElementById('stickyBar');
       var hero = document.querySelector('.hero');
-      if (stickyBar && hero) {
+      if (stickyBar) {
         function onScroll() {
-          var heroBottom = hero.getBoundingClientRect().bottom;
-          if (heroBottom < 0) {
+          var threshold = hero ? hero.offsetHeight * 0.6 : 300;
+          if (window.scrollY > threshold) {
             stickyBar.classList.add('is-visible');
           } else {
             stickyBar.classList.remove('is-visible');
           }
         }
         window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
       }
     })();
   </script>
