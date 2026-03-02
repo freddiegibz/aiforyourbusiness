@@ -519,7 +519,16 @@
     'https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '1402997244901314');
     fbq('track', 'PageView');
-    fbq('track', 'Purchase', { value: 23.00, currency: 'USD' });
+    function firePurchasePixel() {
+      if (typeof fbq === 'function') {
+        fbq('track', 'Purchase', { value: 23.00, currency: 'USD' });
+      }
+    }
+    if (document.readyState === 'complete') {
+      firePurchasePixel();
+    } else {
+      window.addEventListener('load', firePurchasePixel);
+    }
   </script>
   <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=1402997244901314&ev=PageView&noscript=1"
